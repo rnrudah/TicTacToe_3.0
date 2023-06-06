@@ -33,6 +33,7 @@ public class Users implements Serializable {
       oos.writeObject(this);
       oos.close();
       fos.close();
+      System.out.println("saving");
       return true;
     } catch (IOException e) {
       System.err.println(e);
@@ -47,6 +48,7 @@ public class Users implements Serializable {
 		  FileInputStream fis = new FileInputStream(fileName);
       ObjectInputStream ois = new ObjectInputStream(fis);
       Users s = (Users) ois.readObject();
+      System.out.println("restoring");
 	    ois.close();
 	    fis.close();
       return s;

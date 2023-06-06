@@ -21,22 +21,10 @@ public class TicTacToe {
         users = new Users();
   
       System.out.println ("Current players:\n" + users);
-      while (true) {
-        String name = Utils.input ("Enter a new or existing user to play (or q to quit): ").trim().toLowerCase();
-        if (name.equals("q")) {
-            System.out.println(users);
-            break;
-        }
-        if (name.length() == 0) {
-          System.out.println("Sorry try again.");
-          continue;  //if word doesn't have any characters, the continue makes you retry again from the top. 
-        }
-        
+      String name = "";
       
-
-      
-      System.out.println ("Updated users:\n" + users);
-
+        name = Utils.input ("Enter a new or existing user to play: ").trim().toLowerCase();
+        System.out.println ("Updated users:\n" + users);
         char[][] gameBoard = {{' ', '|', ' ', '|', ' '}, 
                                 {'-', '+', '-', '+', '-'}, 
                                 {' ', '|', ' ', '|', ' '}, 
@@ -46,6 +34,8 @@ public class TicTacToe {
 
         Scanner scan = new Scanner(System.in);
         System.out.println("Hello, " + name + " welcome to 3x3 tictactoe. You will be playing X against a robot.");
+        int playerWin = 0;
+        int robotWin = 0;
 
         while(true){ 
             //used the try/catch here
@@ -69,6 +59,13 @@ public class TicTacToe {
             if(result.length() > 0) {
                 System.out.println(result);
                 printGameBoard(gameBoard);
+                if (result.equals("Congrats you won against a robot lmao")) {
+                    playerWin++;
+                    System.out.println("you win counting");
+                }
+
+                if (result.equals("RIP, you're ass"))
+                    robotWin++;
                 break;
             }
 
@@ -82,30 +79,28 @@ public class TicTacToe {
 
             printGameBoard(gameBoard);
             result = checkWinner();
-            int playerWin = 0;
-            int robotWin = 0;
+            
             if(result.length() > 0) { 
-                System.out.println(result);
-                if (result.equals("Congrats you won against a robot lmao"))
-                    playerWin++;
-
-                if (result.equals("RIP, you're ass"))
-                    robotWin++;
-
                 printGameBoard(gameBoard);
-                if (users.usersHashmap.get(name) == null) { // If no existing user, create one
-                    User user = new User(name, playerWin, robotWin);
-                    users.usersHashmap.put(name, user);
-                  } else {                                    // Else just update their age and grade
-                    users.usersHashmap.get(name).playerWin = playerWin;
-                    users.usersHashmap.get(name).robotWin = robotWin;
-                  }
-                  users.save();
-                  break;
+                break;
+                // stores player info
+                //funny problem: if i make a new player right after another game the games think theyre overlapping... a bit too lazy to fix that rn though. 
+                //Not really sure how to fix either
+                //T_T
+
             }
         }
+        if (users.usersHashmap.get(name) == null) { // If no existing user, create one
+            User user = new User(name, playerWin, robotWin);
+            users.usersHashmap.put(name, user);
+            users.save();
+          } else {                                    // Else just update their age and grade
+            users.usersHashmap.get(name).playerWin += playerWin;
+            users.usersHashmap.get(name).robotWin += robotWin;
+            users.save();
+          }
     }
-}
+
 
     //printing out board 
     public static void printGameBoard(char[][] gameBoard) {
@@ -161,6 +156,7 @@ public class TicTacToe {
         }
     }
 
+
 public static String checkWinner() {
     //so this basically creates an array, and if the code sees that the 
     //corresponding numbers are in the 2d array board, 
@@ -191,8 +187,9 @@ public static String checkWinner() {
     //contains ALL the numbers in one of the winning condition arrays
     //then you win!!
     for(List l: winning) {
-        if (playerPositions.containsAll(l)) 
+        if (playerPositions.containsAll(l)) {
             return "Congrats you won against a robot lmao";
+        }
         else if(robotPositions.containsAll(l))
             return "RIP, you're ass";
 
@@ -203,7 +200,6 @@ public static String checkWinner() {
     }
     return "";
 }
-
 
 
 }
